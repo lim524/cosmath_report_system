@@ -375,13 +375,12 @@ export default function Home() {
 
             {/* 담당교사 (13pt, 편집 가능) */}
             {/* 담당교사 (13pt, 편집 가능) */}
-            <div className="text-right mb-1" style={{ fontSize: '13pt', color: '#000000' }}>
-              <span style={{ letterSpacing: '0.02em', fontWeight: 'normal', textShadow: '0 0 1px #000000' }}>담당교사 :</span>
+            <div className="text-right mb-1" style={{ fontSize: '13pt'}}>
+              <span style={{ letterSpacing: '0.02em', fontWeight: 'normal'}}>담당교사 :</span>
               <input
                 className="border-none outline-none focus:bg-yellow-50 w-24 ml-1"
                 style={{
                   fontWeight: 'normal',
-                  textShadow: '0 0 1px #000000',
                   letterSpacing: 'normal',
                   transform: 'translateZ(0)',
                   willChange: 'transform',
