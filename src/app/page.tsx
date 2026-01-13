@@ -134,19 +134,32 @@ export default function Home() {
   };
 
   const updateField = (key: keyof ReportData, value: string) => {
-    if (isIndividualMode && currentStudent) {
-      // ✅ 개별 편집 모드: 현재 학생의 오버라이드만 업데이트
-      setOverrides(prev => ({
-        ...prev,
-        [currentStudent.name]: {
-          ...(prev[currentStudent.name] || {}),
-          [key]: value
-        }
-      }));
+    // ✅ 변경된 로직: 일괄 편집이든 개별 편집이든 "선택된 학생들"에게만 오버라이드를 적용합니다.
+    // 기존에는 일괄 편집 시 commonData(전역)를 바꿨으나, 이는 선택되지 않은 학생에게도 영향을 주는 문제가 있었습니다.
+
+    let targets: { name: string, grade: string }[] = [];
+
+    if (isIndividualMode) {
+      // 개별 모드: 현재 보고 있는 학생만
+      if (currentStudent) targets = [currentStudent];
     } else {
-      // ✅ 일괄 편집 모드: 공통 데이터 업데이트
-      setCommonData(prev => ({ ...prev, [key]: value }));
+      // 일괄 모드: 선택된 모든 학생
+      targets = selectedStudents;
     }
+
+    if (targets.length === 0) return;
+
+    setOverrides(prev => {
+      const next = { ...prev };
+      targets.forEach(student => {
+        // 각 학생별 오버라이드 업데이트 (commonData 건드리지 않음)
+        next[student.name] = {
+          ...(next[student.name] || {}),
+          [key]: value
+        };
+      });
+      return next;
+    });
   };
 
   // 사이드바 단일 선택 시 (일단 리스트를 해당 학생 1명으로 재설정한다고 가정하거나,
