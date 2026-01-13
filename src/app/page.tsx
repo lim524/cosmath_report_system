@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import StudentSidebar from "../components/layout/Sidebar";
 import { Menu, Download, ChevronLeft, ChevronRight, Users, User, Loader2 } from "lucide-react";
 import { toBlob } from "html-to-image";
@@ -55,6 +55,29 @@ export default function Home() {
 
   // ✅ 개별 오버라이드 데이터 (학생 이름 기준)
   const [overrides, setOverrides] = useState<Record<string, Partial<ReportData>>>({});
+
+  // ✅ 데이터 로드 (Client-side only to avoid hydration mismatch)
+  useEffect(() => {
+    const savedCommon = localStorage.getItem("cosmath_common_data");
+    const savedOverrides = localStorage.getItem("cosmath_overrides_data");
+
+    if (savedCommon) {
+      setCommonData(prev => ({ ...prev, ...JSON.parse(savedCommon) }));
+    }
+    if (savedOverrides) {
+      setOverrides(JSON.parse(savedOverrides));
+    }
+  }, []);
+
+  // ✅ 데이터 저장 - commonData
+  useEffect(() => {
+    localStorage.setItem("cosmath_common_data", JSON.stringify(commonData));
+  }, [commonData]);
+
+  // ✅ 데이터 저장 - overrides
+  useEffect(() => {
+    localStorage.setItem("cosmath_overrides_data", JSON.stringify(overrides));
+  }, [overrides]);
 
   // ✅ 편집 모드 상태 (false: 일괄 편집, true: 개별 편집)
   const [isIndividualMode, setIsIndividualMode] = useState(false);
@@ -375,8 +398,8 @@ export default function Home() {
 
             {/* 담당교사 (13pt, 편집 가능) */}
             {/* 담당교사 (13pt, 편집 가능) */}
-            <div className="text-right mb-1" style={{ fontSize: '13pt'}}>
-              <span style={{ letterSpacing: '0.02em', fontWeight: 'normal'}}>담당교사 :</span>
+            <div className="text-right mb-1" style={{ fontSize: '13pt' }}>
+              <span style={{ letterSpacing: '0.02em', fontWeight: 'normal' }}>담당교사 :</span>
               <input
                 className="border-none outline-none focus:bg-yellow-50 w-24 ml-1"
                 style={{
