@@ -16,6 +16,17 @@ export const STUDENT_DATA: StudentGroup[] = [
     ],
   },
   {
+    group: "중1 정규반(화목반)",
+    students: [
+      { name: "권윤진", grade: "중1" }, { name: "김도윤", grade: "중1" },
+      { name: "김민수", grade: "중1" }, { name: "김정우", grade: "중1" },
+      { name: "김채하", grade: "중1" }, { name: "민지효", grade: "중1" },
+      { name: "박서윤", grade: "중1" }, { name: "박소영", grade: "중1" },
+      { name: "송민서", grade: "중1" }, { name: "이태경", grade: "중1" },
+      { name: "임재하", grade: "중1" }, { name: "장도윤", grade: "중1" },
+    ],
+  },
+  {
     group: "중2 정규반(월수반)",
     students: [
       { name: "김아용", grade: "중2" }, { name: "김예서", grade: "중2" },
