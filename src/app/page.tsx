@@ -8,6 +8,9 @@ import Image from "next/image";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { getFormattedDate } from "../utils/date";
+import dayjs from 'dayjs';
+import weekOfYear from 'dayjs/plugin/weekOfYear';
+import 'dayjs/locale/ko';
 
 // 모든 변수 내용 편집 가능하도록 인터페이스 설정
 interface ReportData {
@@ -78,6 +81,25 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem("cosmath_overrides_data", JSON.stringify(overrides));
   }, [overrides]);
+
+  useEffect(() => {
+    if (!reportData.date) {
+      const now = dayjs();
+      
+      // 1. 년, 월, 일 구하기
+      const dateStr = now.format('YYYY년 MM월 DD일');
+      
+      // 2. 해당 월의 주차 계산하기
+      // (현재 날짜의 일수 + 이번 달 1일의 요일 숫자)를 7로 나누어 올림
+      const startOfMonth = now.startOf('month');
+      const weekOfMonth = Math.ceil((now.date() + startOfMonth.day()) / 7);
+
+      // 3. 최종 문자열 조합 (예: 2026년 01월 13일 2주차)
+      const finalString = `${dateStr} ${weekOfMonth}주차`;
+      
+      updateField('date', finalString);
+    }
+  }, []);
 
   // ✅ 편집 모드 상태 (false: 일괄 편집, true: 개별 편집)
   const [isIndividualMode, setIsIndividualMode] = useState(false);
@@ -339,8 +361,8 @@ export default function Home() {
             {/* 상단 날짜 (11pt) */}
             <div className="text-right mb-2" style={{ fontSize: '11pt' }}>
               <input
-                className="text-right border-none outline-none focus:bg-yellow-50 w-64"
-                value={reportData.date}
+                className="text-right border-none outline-none focus:bg-yellow-50 w-80" // 주차가 붙어서 너비를 w-80 정도로 늘려주세요.
+                value={reportData.date || ''}
                 onChange={(e) => updateField('date', e.target.value)}
               />
             </div>
