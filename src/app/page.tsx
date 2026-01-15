@@ -518,7 +518,7 @@ export default function Home() {
                       className="w-full p-[4mm] outline-none border-none resize-none leading-relaxed text-[11pt] font-normal block"
                       style={{ 
                         fontFamily: "var(--font-hamchorom)",
-                        minHeight: '80mm', // 최소 높이 유지
+                        minHeight: '50mm', // 최소 높이 유지
                         overflow: 'hidden' // 스크롤바 숨김
                       }}
                       value={reportData.progress}
@@ -533,7 +533,7 @@ export default function Home() {
                 </tr>
 
                 {/* 5행: 과제 여부 및 현황 */}
-                <tr style={{ height: '24mm' }}>
+                <tr style={{ height: '12mm' }}>
                   <td className="border border-black bg-[#e8f0fe] text-center font-normal leading-tight px-1">지난 과제 여부</td>
                   <td className="border border-black text-center font-normal px-[1.8mm]">
                     <input className="w-full text-center outline-none border-none bg-transparent font-normal" value={reportData.hwLast} onChange={(e) => updateField('hwLast', e.target.value)} />
