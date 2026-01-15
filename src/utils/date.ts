@@ -1,14 +1,18 @@
 // src/utils/date.ts
+import dayjs from 'dayjs';
+import 'dayjs/locale/ko';
 
 export const getFormattedDate = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  // 1월은 0부터 시작하므로 +1, 두 자릿수 유지를 위해 padStart 사용
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const date = String(now.getDate()).padStart(2, '0');
-  
-  // 단순 주차 계산 (1~7일=1주차, 8~14일=2주차...)
-  const week = Math.ceil(now.getDate() / 7);
-  
-  return `${year}년 ${month}월 ${date}일 ${week}주차`;
+  const now = dayjs();
+
+  // 1. 년, 월, 일 구하기
+  const dateStr = now.format('YYYY년 MM월 DD일');
+
+  // 2. 해당 월의 주차 계산하기
+  // (현재 날짜의 일수 + 이번 달 1일의 요일 숫자)를 7로 나누어 올림
+  const startOfMonth = now.startOf('month');
+  const weekOfMonth = Math.ceil((now.date() + startOfMonth.day()) / 7);
+
+  // 3. 최종 문자열 조합 (예: 2026년 01월 13일 2주차)
+  return `${dateStr} ${weekOfMonth}주차`;
 };
