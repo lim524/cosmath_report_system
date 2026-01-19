@@ -65,7 +65,10 @@ export default function Home() {
     const savedOverrides = localStorage.getItem("cosmath_overrides_data");
 
     if (savedCommon) {
-      setCommonData(prev => ({ ...prev, ...JSON.parse(savedCommon) }));
+      const parsed = JSON.parse(savedCommon);
+      // ✅ 날짜는 항상 현재 날짜를 사용하도록 제외
+      const { date, ...restData } = parsed;
+      setCommonData(prev => ({ ...prev, ...restData }));
     }
     if (savedOverrides) {
       setOverrides(JSON.parse(savedOverrides));
@@ -220,6 +223,11 @@ export default function Home() {
   // ✅ 이미지 생성 중 로딩 상태
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
+
+
+
+
+
   const saveAsImage = async () => {
     if (!reportRef.current || selectedStudents.length === 0) return;
     setIsGeneratingImage(true);
@@ -362,6 +370,7 @@ export default function Home() {
             </button>
           </div>
         </header>
+
         <main className="p-12 flex justify-center items-start w-full min-w-max">  {reportData.name ? (
           <div
             ref={reportRef}
@@ -526,7 +535,7 @@ export default function Home() {
                 </tr>
 
                 {/* 4행: 단원명/진도 */}
-                <tr style={{ minHeight: '50mm' }}> {/* height 대신 minHeight 사용 */}
+                <tr style={{ minHeight: '50mm' }}>
                   <td className="border border-black bg-[#e8f0fe] text-center font-normal text-[14pt]">단원명/진도</td>
                   <td
                     colSpan={6}
