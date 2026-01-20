@@ -2,7 +2,9 @@
 
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import StudentSidebar from "../components/layout/Sidebar";
-import { Menu, Download, ChevronLeft, ChevronRight, Users, User, Loader2 } from "lucide-react";
+import RightSidebar from "../components/layout/RightSidebar";
+import { GradeContent } from "../constants/reportContents";
+import { Menu, Download, ChevronLeft, ChevronRight, Users, User, Loader2, Settings } from "lucide-react";
 import { toBlob } from "html-to-image";
 import Image from "next/image";
 import JSZip from "jszip";
@@ -33,6 +35,7 @@ interface ReportData {
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
   const [selectedStudents, setSelectedStudents] = useState<{ name: string, grade: string, group: string }[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0); // 현재 보고 있는 학생 인덱스
@@ -199,6 +202,33 @@ export default function Home() {
       });
       return next;
     });
+  };
+
+  const handleApplyGradeData = (data: GradeContent) => {
+    if (selectedStudents.length === 0) {
+      alert("데이터를 적용할 학생을 먼저 선택해주세요.");
+      return;
+    }
+
+    const targets = isIndividualMode ? (currentStudent ? [currentStudent] : []) : selectedStudents;
+
+    if (targets.length === 0) return;
+
+    setOverrides(prev => {
+      const next = { ...prev };
+      targets.forEach(student => {
+        next[student.name] = {
+          ...(next[student.name] || {}),
+          book: data.book,
+          progress: data.progress,
+          notes: data.notes
+        };
+      });
+      return next;
+    });
+
+    // 적용 시 우측 사이드바 닫기 (선택 사항)
+    // setIsRightSidebarOpen(false);
   };
 
   // 사이드바 단일 선택 시 (일단 리스트를 해당 학생 1명으로 재설정한다고 가정하거나,
@@ -368,6 +398,16 @@ export default function Home() {
               {isGeneratingImage ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
               <span>{isGeneratingImage ? "저장 중..." : "이미지 저장"}</span>
             </button>
+
+            {!isRightSidebarOpen && (
+              <button
+                onClick={() => setIsRightSidebarOpen(true)}
+                className="p-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-slate-300 hover:text-white transition-all shadow-md"
+                title="학년별 프리셋"
+              >
+                <Settings size={22} />
+              </button>
+            )}
           </div>
         </header>
 
@@ -601,6 +641,12 @@ export default function Home() {
         )}
         </main>
       </div>
+
+      <RightSidebar
+        isOpen={isRightSidebarOpen}
+        onClose={() => setIsRightSidebarOpen(false)}
+        onApplyData={handleApplyGradeData}
+      />
     </div>
   );
 }
