@@ -37,6 +37,7 @@ export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLTextAreaElement>(null);
   const [selectedStudents, setSelectedStudents] = useState<{ name: string, grade: string, group: string }[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0); // 현재 보고 있는 학생 인덱스
 
@@ -134,6 +135,14 @@ export default function Home() {
       grade: currentStudent.grade // 학년도 항상 현재 선택된 학생
     };
   }, [commonData, overrides, currentStudent]);
+
+  // ✅ 진도 textarea 높이 자동 조절
+  useEffect(() => {
+    if (progressRef.current) {
+      progressRef.current.style.height = 'auto';
+      progressRef.current.style.height = `${progressRef.current.scrollHeight}px`;
+    }
+  }, [reportData.progress, currentStudent]);
 
   const getDefaultTime = (grade: string) => {
     if (grade.includes("초")) return "15:30 ~ 17:30";
@@ -411,8 +420,9 @@ export default function Home() {
           </div>
         </header>
 
-        <main className="p-12 flex justify-center items-start w-full min-w-max">  {reportData.name ? (
+        <main className="p-12 flex justify-center items-start w-full min-w-max">  {currentStudent ? (
           <div
+            key={currentStudent.name}
             ref={reportRef}
             className="bg-white p-[40px] shadow-2xl border border-slate-300 relative text-black shrink-0"
             style={{
@@ -587,13 +597,13 @@ export default function Home() {
                     }}
                   >
                     <textarea
-                      className="w-full outline-none border-none resize-none leading-relaxed text-[11pt] font-normal block"
+                      ref={progressRef}
+                      className="w-full outline-none border-none resize-none leading-relaxed text-[11pt] font-normal block text-black"
                       style={{
                         fontFamily: "var(--font-hamchorom)",
                         backgroundColor: 'transparent',
                         overflow: 'hidden',
                         padding: '0 4mm',       /* 좌우 여백만 주고 상하는 0 */
-                        height: 'auto',         /* 높이를 글자에 맞춤 */
                         display: 'inline-block',
                         verticalAlign: 'middle' /* textarea 자체도 중간에 오도록 */
                       }}
@@ -601,9 +611,6 @@ export default function Home() {
                       value={reportData.progress}
                       onChange={(e) => {
                         updateField('progress', e.target.value);
-                        // 높이 자동 조절 (이게 있어야 두 줄 될 때 td 안에서 중앙 유지)
-                        e.target.style.height = 'auto';
-                        e.target.style.height = `${e.target.scrollHeight}px`;
                       }}
                     />
                   </td>
